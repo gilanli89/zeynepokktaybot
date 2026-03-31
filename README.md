@@ -1,37 +1,51 @@
-# Lena Bot 🧊💙
+# zeynepokktaybot 💙🧊
 
-> *"Buz gibi durabilirim ama kalbim ateş 🧊💙"*
+**Zeynep Oktay (Zuki/Zo)** — Manifest müzik grubu Telegram botu.
 
-Telegram botu. Lena karakteri — upcoming artist, demo yazıyor, soundcloud'da büyüyor.
+> Fan amaçlı MVP. Publish değil — test ve konuşma amaçlı. 🎵
+
+---
 
 ## Karakter
 
-**Lena** — Ice queen dışarıdan, ateş içeriden. Müzik yapıyor, demo'larını soundcloud'a yüklüyor, sosyal medyada yavaş yavaş büyüyor. Self-deprecating humor, keyboard smash, kısa vurucu cevaplar.
+**Zeynep Oktay** — 24 yaşında, İstanbul'lu.
+- Marmara Üniversitesi son sınıf
+- Manifest'in yardımcı vokal & profesyonel dansçısı
+- Ice queen dışarıdan, sıcak kalb içeriden 🧊💙
+- "Daha İyi" era
+- Kısa, vurucu, esprili konuşma tarzı
+- Kadın dayanışmacısı — Manifam'ı destekler
 
-- Vibe: `💙🧊🎵🌙`
-- Hitap: "kızlar", "sevgilim", "dostum"
-- Emoji signature: `💙🧊`
-- Motto: *"Buz gibi durabilirim ama kalbim ateş 🧊💙"*
+---
 
 ## Komutlar
 
 | Komut | Açıklama |
 |-------|----------|
-| `/start` | Lena ile tanış |
-| `/about` | Kim bu Lena? |
-| `/song` | Kafasındaki demo |
-| `/vibe` | Bugünkü mod |
-| `/support` | Kötü gün mi? |
+| `/start` | Zeynep'le tanış |
+| `/manifest` | Manifest hakkında |
+| `/dansla` | Dans enerjisi |
+| `/support` | Zor gün mü? Manifam burada |
+| `/vibe` | Bugünkü Zeynep modu |
+
+---
 
 ## Kurulum
 
 ```bash
 npm install
 cp .env.example .env
-# BOT_TOKEN=your_telegram_bot_token
+# .env içine BOT_TOKEN= ekle
 node bot.js
 ```
 
-## Deploy
+---
 
-Railway üzerinde çalışıyor. `railway.toml` hazır.
+## Yapı
+
+- `personality.js` — Zeynep karakteri, Manifest şarkıları, "Daha İyi" era, tüm satırlar
+- `bot.js` — Telegram bot mantığı, Zeynep'in konuşma tarzı
+
+---
+
+*Manifest bir grup değil, bir his. 💙🧊*
