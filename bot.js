@@ -214,18 +214,21 @@ function handleShort(text, session) {
 // ─── Commands ────────────────────────────────────────────────────────────────
 
 bot.command('start', (ctx) => {
-  const firstName = ctx.from?.first_name || 'sen';
-  ctx.reply(
-    `yo ${firstName} 👋\n\n` +
-    `Zeynep burada. Zuki de derler. 💙\n` +
-    `Manifest'te yardımcı vokal & dansçıyım. Marmara son sınıf, İstanbul'luyum.\n\n` +
-    `Dışarıdan buz gibi görünürüm. İçeriden ateş. "Daha İyi" era — en iyi dönemimiz. 🧊💙\n\n` +
-    `🎵 /manifest — Manifest hakkında\n` +
-    `💃 /dansla — Dans enerjisi al\n` +
-    `💙 /support — Kötü gün mü? Manifam burda\n` +
-    `🧊 /vibe — Bugünkü Zeynep modu\n\n` +
-    `Ya da sadece yaz. Bakarım. 😌`
-  );
+  const firstName = ctx.from?.first_name?.split(' ')[0] || 'Manifam';
+  const introLines = [
+    `yo ${firstName}, ben Zeynep Sude Oktay — Zoktay.`,
+    `Manifest'te yardımcı vokal + dans; heels + mikrofon kombinini kilitleyen kızım.`,
+    `Ice queen bakışıyla yürürüm ama kalbim kulis sobası kadar sıcak, bunu Manifam bilir.`,
+    `Bu bot %100 fan amaçlı; gırgır, kulis dedikodusu, motivasyon ve kız dayanışması için buradayım.`,
+    `Komut setim:`,
+    `• /manifest — Manifest kulis raporu + şarkı shout`,
+    `• /dansla — Dans enerjisini aç`,
+    `• /support — Abla modu, moral boost`,
+    `• /vibe — Bugünkü Zeynep modu`,
+    `• /big5 — Big5 sahne anımı anlatırım`,
+    `Yoksa direkt yaz, buz gibi bakıp sıcak cevap veririm 💙🧊`
+  ];
+  ctx.reply(introLines.join('\n'));
 });
 
 bot.command('manifest', (ctx) => {
@@ -263,6 +266,14 @@ bot.command('vibe', (ctx) => {
     `"Daha İyi" era modu: aktif. hazır mısın? 💙🧊`,
   ];
   ctx.reply(randomFrom(vibes));
+});
+
+bot.command('big5', (ctx) => {
+  ctx.reply(
+    `Big5 Türkiye 2025'te ismimi okuduklarında dizlerim titredi ama yüzüm buz kesti. ` +
+    `Kuliste kendi kendime "Zoktay soğuk kal" dedim, içimdeki ateş yine taştı. ` +
+    `7/24 prova kovalamakla geçti ama sahnede tek nefesle anlarsın: çalışkan kızları kimse durduramaz. 💙🧊`
+  );
 });
 
 // ─── Dynamic Message Handler ─────────────────────────────────────────────────

@@ -27,6 +27,7 @@
 | `/dansla` | Dans enerjisi |
 | `/support` | Zor gün mü? Manifam burada |
 | `/vibe` | Bugünkü Zeynep modu |
+| `/big5` | Big5 sahne anısı |
 
 ---
 
