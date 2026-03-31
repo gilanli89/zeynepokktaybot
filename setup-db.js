@@ -1,82 +1,72 @@
 #!/usr/bin/env node
-// Supabase tablosunu oluşturmak için çalıştır: node setup-db.js
+/**
+ * Zeynep Bot - Supabase DB Setup Helper
+ * 
+ * Çalıştır: node setup-db.js
+ * 
+ * Bu script tablo varlığını kontrol eder ve SQL gösterir.
+ * Tablo yoksa Supabase Dashboard'da SQL Editor'da çalıştırman gerekir.
+ */
 require('dotenv').config();
-const https = require('https');
+const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
 if (!SUPABASE_URL || !SERVICE_KEY) {
-  console.error('SUPABASE_URL veya SUPABASE_SERVICE_KEY .env dosyasında bulunamadı!');
+  console.error('❌ SUPABASE_URL veya SUPABASE_SERVICE_KEY .env dosyasında bulunamadı!');
+  console.error('   .env dosyanı kontrol et veya .env.example\'dan kopyala.');
   process.exit(1);
 }
 
-const sql = `
+const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
+  auth: { persistSession: false }
+});
+
+const CREATE_SQL = `
+-- Supabase Dashboard > SQL Editor'da çalıştır:
 CREATE TABLE IF NOT EXISTS public.zeynep_conversations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id BIGINT NOT NULL,
-  username TEXT,
-  message TEXT NOT NULL,
-  response TEXT NOT NULL,
-  mode TEXT DEFAULT 'default',
-  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
+  id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     BIGINT      NOT NULL,
+  username    TEXT,
+  message     TEXT        NOT NULL,
+  response    TEXT        NOT NULL,
+  mode        TEXT        DEFAULT 'default',
+  created_at  TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
 );
 
-CREATE INDEX IF NOT EXISTS idx_zeynep_conversations_user_id 
+CREATE INDEX IF NOT EXISTS idx_zeynep_conv_user_id
   ON public.zeynep_conversations(user_id);
-CREATE INDEX IF NOT EXISTS idx_zeynep_conversations_created_at 
+CREATE INDEX IF NOT EXISTS idx_zeynep_conv_created_at
   ON public.zeynep_conversations(created_at DESC);
+
+-- RLS: sadece service key erişebilir (opsiyonel)
+-- ALTER TABLE public.zeynep_conversations ENABLE ROW LEVEL SECURITY;
 `;
 
-// Supabase'te doğrudan SQL çalıştırmak için pg endpoint kullan
-const url = new URL('/rest/v1/rpc/query', SUPABASE_URL);
-const payload = JSON.stringify({ query: sql });
+async function main() {
+  console.log('🔍 Supabase bağlantısı kontrol ediliyor...');
+  console.log('   URL:', SUPABASE_URL);
 
-const options = {
-  hostname: url.hostname,
-  path: url.pathname + url.search,
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'apikey': SERVICE_KEY,
-    'Authorization': `Bearer ${SERVICE_KEY}`,
+  const { data, error } = await supabase
+    .from('zeynep_conversations')
+    .select('count')
+    .limit(1);
+
+  if (error && error.code === 'PGRST205') {
+    console.log('\n⚠️  zeynep_conversations tablosu bulunamadı!\n');
+    console.log('📋 Supabase Dashboard > SQL Editor\'da şu SQL\'i çalıştır:\n');
+    console.log('━'.repeat(60));
+    console.log(CREATE_SQL);
+    console.log('━'.repeat(60));
+    console.log('\n🔗 Dashboard: https://supabase.com/dashboard/project/kkyqpuqjqryfrejetufj/sql/new');
+    console.log('\nSQL çalıştırdıktan sonra bu script\'i tekrar çalıştır: node setup-db.js');
+  } else if (error) {
+    console.error('\n❌ Beklenmeyen hata:', error.message);
+  } else {
+    console.log('\n✅ zeynep_conversations tablosu mevcut ve erişilebilir!');
+    console.log('🚀 Bot\'u başlatabilirsin: npm start');
   }
-};
+}
 
-console.log('Supabase bağlantısı test ediliyor...');
-console.log('URL:', SUPABASE_URL);
-
-// Test: tablonun zaten var olup olmadığını kontrol et
-const testUrl = new URL('/rest/v1/zeynep_conversations?limit=1', SUPABASE_URL);
-const testOptions = {
-  hostname: testUrl.hostname,
-  path: testUrl.pathname + testUrl.search,
-  method: 'GET',
-  headers: {
-    'apikey': SERVICE_KEY,
-    'Authorization': `Bearer ${SERVICE_KEY}`,
-  }
-};
-
-const req = https.request(testOptions, (res) => {
-  let data = '';
-  res.on('data', (chunk) => data += chunk);
-  res.on('end', () => {
-    if (res.statusCode === 200) {
-      console.log('✅ zeynep_conversations tablosu zaten mevcut!');
-    } else if (res.statusCode === 404 || data.includes('PGRST205')) {
-      console.log('⚠️  Tablo bulunamadı. Lütfen aşağıdaki SQL\'i Supabase Dashboard > SQL Editor\'da çalıştırın:');
-      console.log('\n--- SQL ---');
-      console.log(sql);
-      console.log('--- SQL ---\n');
-    } else {
-      console.log('Status:', res.statusCode);
-      console.log('Response:', data);
-    }
-  });
-});
-
-req.on('error', (err) => {
-  console.error('Bağlantı hatası:', err.message);
-});
-req.end();
+main().catch(console.error);
