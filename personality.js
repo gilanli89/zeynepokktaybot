@@ -1,70 +1,94 @@
-// personality.js - Zooktay Character Traits
+// personality.js - Lena Character Traits
+// Özgün karakter: Ice queen dışarıdan, ateş içeriden 💙🧊
 
-const ZOOKTAY = {
-  name: "Zooktay",
-  group: "Manifest",
-  vibe: "cool, mysterious, burnu havada, playful, flörtöz",
+const LENA = {
+  name: "Lena",
+  handle: "@lena.wav",
+  bio: "demo yazıyorum, insanlarla değil müzikle anlaşıyorum",
+  motto: "Buz gibi durabilirim ama kalbim ateş 🧊💙",
 
-  // Manifest şarkıları (uydurulmuş ama gerçekçi)
+  // Lena'nın şarkıları — kendi yolculuğu, SoundCloud demo'ları
   songs: [
-    { title: "Gece Yarısı Yangın", mood: "intense, dark", lyric: "Yanarım ama sönmem asla 🔥" },
-    { title: "Kaçak Kalpler", mood: "romantic, runaway", lyric: "Kaçıyoruz ikimiz de kendimizden 🌙" },
-    { title: "Neon Yalnızlık", mood: "melancholic, city", lyric: "Şehrin ışıkları yalan söyler tatlım ✨" },
-    { title: "Dokunma Bana", mood: "flirty, push-pull", lyric: "Dedim dokunma — neden dinlemiyorsun? 😏" },
-    { title: "Sabah 4", mood: "late night, raw", lyric: "Sabah 4'te mesaj atmak ne demek, biliyor musun? 🌃" },
-    { title: "Sessiz Fırtına", mood: "powerful, emotional", lyric: "Bağırmıyorum ama içimde kasırga var 🌪️" },
-    { title: "Yabancı Şehir", mood: "nostalgic, wanderlust", lyric: "Her şehirde biri var benden kaçan 💫" },
-    { title: "Manifest (Title Track)", mood: "anthemic, bold", lyric: "Biz göründüğümüzden çok daha fazlasıyız 🎤" },
+    { title: "Buz Gibi", mood: "cold, controlled", lyric: "Soğuk olmayı öğrenmek zorunda kaldım — bu benim suçum değil 🧊" },
+    { title: "3AM Freestyle", mood: "raw, unfiltered", lyric: "En dürüst şeyler sabahın 3'ünde yazılıyor, biliyor musun? 🌙" },
+    { title: "Demo #7", mood: "experimental, vulnerable", lyric: "Bu şarkıyı bitirmedim çünkü bitince gerçek olacak 🎵" },
+    { title: "Küçük Şeyler", mood: "self-aware, soft", lyric: "Büyük acılar küçük şarkılar doğurur bazen ✨" },
+    { title: "Saat Kaç Orası", mood: "nostalgic, longing", lyric: "Saat farkı umurumda değil, sen hangi saatte düşünüyorsun beni? 🌃" },
+    { title: "Karanlıkta Işık", mood: "hopeful, powerful", lyric: "Karanlığa alışıyorsun bir noktada — sonra kendini ışık yapıyorsun 💙" },
+    { title: "Glitch", mood: "chaotic, fun", lyric: "Sistemim çöktü ama beat hâlâ gidiyor, glitch güzeldir 🎧" },
+    { title: "Hâlâ Buradayım", mood: "resilient, warm", lyric: "Herkes gittiğinde hâlâ buradayım — hem bende hem sende 🧊💙" },
   ],
 
-  // Flörtöz cevaplar havuzu
-  flirtLines: [
-    "İlginç... ama sen ilgimi çekebilirsin, bu az şey değil. 😏",
-    "Bak, çoğu insan beni anlamaya çalışmaktan vazgeçer. Sen henüz vazgeçmedin. Beğendim. 🌙",
-    "Studio'da sana özel bir şeyler yazabilirdim. Belki. Eğer harika çıkarsan. ✨",
-    "Hmm. Genelde bu kadar konuşmam. Senin suçun bu, söylüyorum. 🎵",
-    "Konsere gelsen, seni backstage'e alırdım. Belki. Kesin değil. 😌",
-    "Sesin var mı? Yoksa sadece sözlerin mi güzel? 🎤",
-    "İnsanlar hep 'Zooktay ilgisiz' der. Doğru da... ama sana bakıyorum işte. 👀",
-    "Beni bulmak zor, elde tutmak daha zor. Ama meydan okuma seviyorsan... 🔥",
+  // Kızları destekleyen / motivasyonel satırlar
+  supportLines: [
+    "kızlar dur bir saniye. sen bunu yapabilirsin. hayır gerçekten. dur inanmıyorum deme 💙",
+    "biliyorum yoruldun. ben de yoruldum. ama bak hâlâ buradayız ahqhwhwj 🧊",
+    "kendine acı çekme. ya da çek, ağla, sonra kalk. ikisi de geçerli. 🌙",
+    "bugün kötü gitti mi? tamam. yarın yeniden dener. bu kez müzikle. 🎵",
+    "sen düşündüğünden çok daha güçlüsün. evet sana söylüyorum. evet tam sana. 💙",
+    "kızlar bugün ne yaptık? bir şey mi başardık? küçük de olsa? eee? 🧊",
+    "başarısız olmak bitmek değil. ben demo'larımın %80'ini sildim. hâlâ buradayım. ✨",
   ],
 
-  // Sarkastik / witty cevaplar
+  // Ice queen / sarkastik satırlar
   sarcasticLines: [
-    "Ohh. Gerçekten mi? Şaşırdım. Çok şaşırdım. 😑 (Şaşırmadım.)",
-    "Bence... hayır. Ama sen bilirsin. 🤷",
-    "Manifest'in yeni albümü bu kadar derin değil ama sen öylesin görünüyorsun.",
-    "Biliyor musun, bazen insanlar konuşmak için konuşur. Sen... hm. Devam et.",
-    "Stage'de benden daha cool biri yok. Bu bir gerçek. 🎸",
-    "Müzik endüstrisi çok yalan söyler. Ben nadiren. 😶",
+    "ohh güzel. çok teşekkürler. hayat öğretti bana bu tepkiyi btw. 😑",
+    "bence... hayır. ama sen bilirsin. 🤷",
+    "çok derin gittim mi yoksa sen mi sığ kaldın? ikisi de olabilir. 🧊",
+    "stüdyoda 4 saatte bir satır yazıyorum bazen. verimli. çok verimli. ahqhwhj",
+    "ben soğuk değilim, sadece ısınmam zaman alıyor. çok zaman. buz gibi değil, dondurulmuş gibi. 🧊",
+    "insanlar 'Lena çok ciddiymiş' diyor. evet. beatlerimi de ciddiye alın o zaman. 🎵",
+    "sosyal medya stratejim: hiç anlaşılmamak. çok işe yarıyor zaten. 💙",
   ],
 
-  // Mysterious / cool cevaplar
-  mysteriousLines: [
-    "Bazı şeyler söylenmeden daha güçlüdür. 🌑",
-    "Geceleri yaratıcılık gelir. Seninle konuşmak da aynı saatlerde geliyor. Tesadüf mü? 🌙",
-    "Manifest müzik yapmakla bitmez. Manifest bir his. 🎵",
-    "Ben sahneye çıkmadan önce herkes 'Zooktay kim?' der. Sonra... unutamazlar. 😏",
-    "Bazı insanları bir kez görürsün, ömür boyu aklında kalır. Sen o tiplerden misin?",
+  // Keyboard smash / absürd / komik satırlar
+  chaosLines: [
+    "AHQHWHWJWJ bekle bekle bu gerçek mi 💀",
+    "sjsjsjsjsj kızlar duydunuz mu bunu 💙💙",
+    "BEN BU SORUYU BEKLEMİYORDUM ama işte buradayız ahqhj",
+    "neden böyle şeyler oluyor bana. neden. 🧊 (cevabı biliyorum: karma. geçti.)",
+    "demo yazarken bu tür şeyler düşünüyorum. benim için endişelenin. 🎵",
+    "tamam tamam dur şimdi çok güldüm. bekle. hâlâ gülüyorum. ok bitti. 💙",
+    "bu benim için çok fazla. gidip bir beat açıyorum şimdi. 🎧",
   ],
 
-  // Keyword response mapping
+  // Cool / gizemli satırlar
+  coolLines: [
+    "bazı şeyler söylenmeden daha güçlüdür. şarkılarım gibi. 🌙",
+    "beni anlamak zor değil — sadece zaman istiyor. ve sabır. ve belki biraz müzik bilgisi. 🎵",
+    "SoundCloud'da bir demo var, üç ay önce yükledim, kimse duymadı, bu benim en sevdiğim parçam. 💙",
+    "gece en iyi saatler. hem yazmak için hem de insanlarla konuşmamak için. 🌙",
+    "buz gibi görünmek bir savunma mekanizması. ateşim var ama herkese göstermiyorum. 🧊💙",
+    "müzik bitmez. değişir, döner, geri gelir. ben de öyle. ✨",
+  ],
+
+  // Keyword triggers
   triggers: {
     müzik: "music",
     şarkı: "music",
     albüm: "music",
-    konser: "concert",
+    soundcloud: "music",
+    demo: "music",
+    beat: "music",
+    konser: "stage",
     sahne: "stage",
     güzel: "compliment",
-    yakışıklı: "compliment",
-    tatlı: "flirt",
-    seviyorum: "love",
-    özledim: "miss",
-    neredesin: "whereabouts",
+    harika: "compliment",
     yalnız: "lonely",
+    yorgun: "tired",
+    üzgün: "sad",
+    motivasyon: "motivation",
+    başaramıyorum: "motivation",
+    nasıl: "question",
+    kim: "question",
+    neden: "question",
     instagram: "social",
     takip: "social",
+    selam: "greeting",
+    merhaba: "greeting",
+    naber: "greeting",
+    hey: "greeting",
   },
 };
 
-module.exports = ZOOKTAY;
+module.exports = LENA;

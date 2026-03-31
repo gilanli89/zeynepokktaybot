@@ -1,46 +1,37 @@
-# @zeynepokktaybot — Zooktay Bot 🖤🎵
+# Lena Bot 🧊💙
 
-Telegram botu. Manifest müzik grubundan Zooktay karakterini canlandırır.
+> *"Buz gibi durabilirim ama kalbim ateş 🧊💙"*
+
+Telegram botu. Lena karakteri — upcoming artist, demo yazıyor, soundcloud'da büyüyor.
 
 ## Karakter
-- Cool, mysterious, burnu havada
-- Flörtöz ve playful (18+)
-- Gen Z slang + emoji
-- "Kaçtıkça kovalanan" vibe
+
+**Lena** — Ice queen dışarıdan, ateş içeriden. Müzik yapıyor, demo'larını soundcloud'a yüklüyor, sosyal medyada yavaş yavaş büyüyor. Self-deprecating humor, keyboard smash, kısa vurucu cevaplar.
+
+- Vibe: `💙🧊🎵🌙`
+- Hitap: "kızlar", "sevgilim", "dostum"
+- Emoji signature: `💙🧊`
+- Motto: *"Buz gibi durabilirim ama kalbim ateş 🧊💙"*
 
 ## Komutlar
+
 | Komut | Açıklama |
 |-------|----------|
-| `/start` | Intro mesajı |
-| `/about` | Zooktay bio |
-| `/flirt` | Flörtöz bir mesaj |
-| `/song` | Random Manifest şarkısı |
+| `/start` | Lena ile tanış |
+| `/about` | Kim bu Lena? |
+| `/song` | Kafasındaki demo |
+| `/vibe` | Bugünkü mod |
+| `/support` | Kötü gün mi? |
 
 ## Kurulum
 
 ```bash
-git clone https://github.com/gilanli89/zeynepokktaybot
-cd zeynepokktaybot
 npm install
 cp .env.example .env
-# .env dosyasına BOT_TOKEN ekle
-npm start
+# BOT_TOKEN=your_telegram_bot_token
+node bot.js
 ```
 
-## Railway Deploy
+## Deploy
 
-1. [Railway.app](https://railway.app)'a git
-2. "New Project" → "Deploy from GitHub repo" seç
-3. Bu repoyu bağla
-4. Environment Variables'a `BOT_TOKEN` ekle
-5. Deploy!
-
-## Dosya Yapısı
-
-```
-├── bot.js          # Ana bot logic
-├── personality.js  # Zooktay karakter özellikleri
-├── .env.example    # Env örneği
-├── railway.toml    # Railway config
-└── package.json
-```
+Railway üzerinde çalışıyor. `railway.toml` hazır.
