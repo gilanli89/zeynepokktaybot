@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Telegraf, session } = require('telegraf');
+const { createClient } = require('@supabase/supabase-js');
 const ZEYNEP = require('./personality');
 
 const TOKEN = process.env.BOT_TOKEN;
@@ -7,6 +8,51 @@ if (!TOKEN) {
   console.error('BOT_TOKEN bulunamadı. .env dosyasını kontrol et.');
   process.exit(1);
 }
+
+// ─── Supabase Setup ──────────────────────────────────────────────────────────
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const ADMIN_TELEGRAM_ID = process.env.ADMIN_TELEGRAM_ID
+  ? parseInt(process.env.ADMIN_TELEGRAM_ID)
+  : null;
+
+let supabase = null;
+if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
+  supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+    auth: { persistSession: false }
+  });
+  console.log('✅ Supabase bağlantısı hazır.');
+} else {
+  console.warn('⚠️  SUPABASE_URL veya SUPABASE_SERVICE_KEY eksik — logging devre dışı.');
+}
+
+// ─── Logging Helper ──────────────────────────────────────────────────────────
+
+/**
+ * Supabase'e conversation log yaz.
+ * Fire-and-forget: hata olsa bile bot çökmez.
+ */
+async function logConversation({ userId, username, message, response, mode = 'default' }) {
+  if (!supabase) return;
+  try {
+    const { error } = await supabase.from('zeynep_conversations').insert({
+      user_id: userId,
+      username: username || null,
+      message,
+      response,
+      mode,
+    });
+    if (error) {
+      console.error('[Supabase log error]', error.message);
+    }
+  } catch (err) {
+    // Logging fail etse bile bot çalışmaya devam eder
+    console.error('[Supabase log exception]', err.message);
+  }
+}
+
+// ─── Bot Setup ───────────────────────────────────────────────────────────────
 
 const bot = new Telegraf(TOKEN);
 
@@ -211,6 +257,13 @@ function handleShort(text, session) {
   ]);
 }
 
+// ─── Admin Check ─────────────────────────────────────────────────────────────
+
+function isAdmin(ctx) {
+  if (!ADMIN_TELEGRAM_ID) return false;
+  return ctx.from?.id === ADMIN_TELEGRAM_ID;
+}
+
 // ─── Commands ────────────────────────────────────────────────────────────────
 
 bot.command('start', (ctx) => {
@@ -276,6 +329,104 @@ bot.command('big5', (ctx) => {
   );
 });
 
+// ─── Admin: /logs command ─────────────────────────────────────────────────────
+
+bot.command('logs', async (ctx) => {
+  if (!isAdmin(ctx)) {
+    ctx.reply('🧊 Bu komut sadece admin içindir.');
+    return;
+  }
+
+  if (!supabase) {
+    ctx.reply('⚠️ Supabase bağlantısı yok. .env dosyasını kontrol et.');
+    return;
+  }
+
+  const args = ctx.message.text.split(' ').slice(1);
+  const exportAll = args[0] === 'all';
+
+  try {
+    if (exportAll) {
+      // Tüm konuşmaları JSON olarak export et
+      const { data, error } = await supabase
+        .from('zeynep_conversations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        ctx.reply(`❌ Hata: ${error.message}`);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        ctx.reply('📭 Henüz hiç konuşma kaydı yok.');
+        return;
+      }
+
+      const json = JSON.stringify(data, null, 2);
+      // Telegram'da max 4096 karakter, büyük export'u parçalara böl
+      if (json.length <= 4000) {
+        ctx.reply(`\`\`\`json\n${json}\n\`\`\``, { parse_mode: 'Markdown' });
+      } else {
+        // Dosya olarak gönder
+        const chunks = [];
+        for (let i = 0; i < json.length; i += 4000) {
+          chunks.push(json.slice(i, i + 4000));
+        }
+        await ctx.reply(`📊 Toplam ${data.length} kayıt bulundu. ${chunks.length} parça halinde gönderiliyor...`);
+        for (let i = 0; i < Math.min(chunks.length, 5); i++) {
+          await ctx.reply(`\`\`\`\n${chunks[i]}\n\`\`\``, { parse_mode: 'Markdown' });
+        }
+        if (chunks.length > 5) {
+          ctx.reply(`⚠️ Çok fazla veri — sadece ilk 5 parça gösterildi. Supabase dashboard'dan tam export al.`);
+        }
+      }
+    } else {
+      // Son 10 konuşmayı göster
+      const { data, error } = await supabase
+        .from('zeynep_conversations')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        ctx.reply(`❌ Hata: ${error.message}`);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        ctx.reply('📭 Henüz hiç konuşma kaydı yok.');
+        return;
+      }
+
+      const lines = [`📋 *Son ${data.length} Konuşma* (en yeni üstte)\n`];
+
+      data.forEach((row, i) => {
+        const date = new Date(row.created_at).toLocaleString('tr-TR', {
+          timeZone: 'Europe/Istanbul',
+          day: '2-digit', month: '2-digit',
+          hour: '2-digit', minute: '2-digit'
+        });
+        const user = row.username ? `@${row.username}` : `User ${row.user_id}`;
+        const msg = row.message.length > 60 ? row.message.slice(0, 60) + '…' : row.message;
+        const resp = row.response.length > 80 ? row.response.slice(0, 80) + '…' : row.response;
+
+        lines.push(
+          `*${i + 1}.* ${user} · ${date}\n` +
+          `💬 ${msg}\n` +
+          `🤖 ${resp}\n`
+        );
+      });
+
+      lines.push(`\nTüm kayıtlar için: \`/logs all\``);
+
+      ctx.reply(lines.join('\n'), { parse_mode: 'Markdown' });
+    }
+  } catch (err) {
+    ctx.reply(`❌ Beklenmeyen hata: ${err.message}`);
+  }
+});
+
 // ─── Dynamic Message Handler ─────────────────────────────────────────────────
 
 bot.on('text', (ctx) => {
@@ -283,12 +434,25 @@ bot.on('text', (ctx) => {
   if (text.startsWith('/')) return;
 
   const response = generateResponse(text, ctx.session);
+  const userId = ctx.from?.id;
+  const username = ctx.from?.username;
 
   // Zeynep bazen biraz geç cevaplar — provada olabilir
   const delay = Math.random() < 0.3 ? 1800 : 600;
   setTimeout(() => {
     ctx.sendChatAction('typing');
-    setTimeout(() => ctx.reply(response), 900);
+    setTimeout(async () => {
+      await ctx.reply(response);
+
+      // Async, non-blocking logging — cevap gönderildikten sonra log at
+      logConversation({
+        userId,
+        username,
+        message: text,
+        response,
+        mode: 'default',
+      });
+    }, 900);
   }, delay);
 });
 
